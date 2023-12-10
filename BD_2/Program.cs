@@ -6,13 +6,11 @@ using System.Text.Unicode;
 var domains = File.ReadAllLines("domain_lst.txt").ToHashSet();
 string[] list = File.ReadAllLines("text.txt" , Encoding.UTF8);
 List<user> users = new List<user>();
-foreach (string l in list) users.Add(new user(l));//создание листа юзеров
+foreach (string l in list) users.Add(new user(l.Trim()));   
 
 
-Regex regexNumber = new Regex(@"(^\+7|^8)(\(\d{3}\)\d{7}$|\d{10}$)");
+Regex regexNumber = new Regex(@"(^7|^\+7|^8)(\(\d{3}\)\d{7}$|\d{10}$)");
 Regex regexMail = new Regex(@"^\w{5,14}@\w{3,11}\.(\w{2,})");
-
-//foreach (user u in users) Console.WriteLine($"{u.full_name} {u.T_number} {u.Mail}"); //вывод  всех
 
 var NONnormal_number = from u in users
                     where !regexNumber.IsMatch(u.T_number)
@@ -21,7 +19,7 @@ var NONnormal_number = from u in users
 var NONnormal_mail = from u in users
                    where !(regexMail.IsMatch(u.Mail) && domains.Contains(regexMail.Match(u.Mail).Groups[1].Value))
                    select u;
-
+  
 var SIGMA = from u in users
                     where (regexNumber.IsMatch(u.T_number) && (regexMail.IsMatch(u.Mail) && domains.Contains(regexMail.Match(u.Mail).Groups[1].Value)))
                     select u;
@@ -46,8 +44,9 @@ class user
     public user(string UserData)
     {
         full_name = UserData.Split(";")[0];
-        T_number = UserData.Split(";")[1];
-        Mail = UserData.Split(";")[2];
+        Mail = UserData.Split(";")[1];
+        T_number = UserData.Split(";")[2];
+
     }
 
     public string full_name;
